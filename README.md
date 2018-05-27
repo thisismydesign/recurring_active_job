@@ -22,7 +22,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```bash
+bin/rails generate migration CreateRecurringActiveJob
+```
+
+`*_create_recurring_active_job.rb`
+```
+def change
+  create_table :recurring_active_jobs do |t|
+    t.string :job_id
+    t.string :provider_job_id
+    t.boolean :active, default: true, null: false
+    t.integer :frequency_seconds, default: 600, null: false
+
+    t.timestamps
+  end
+
+  add_index :recurring_active_jobs, :job_id, unique: true
+  add_index :recurring_active_jobs, :provider_job_id, unique: true
+end
+```
 
 ## Development
 
