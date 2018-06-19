@@ -6,8 +6,8 @@ require "recurring_active_job/version"
 Gem::Specification.new do |spec|
   spec.name          = "recurring_active_job"
   spec.version       = RecurringActiveJob::VERSION
-  spec.authors       = ["Csaba Apagyi"]
-  spec.email         = ["csaba.apagyi@xing.com"]
+  spec.authors       = ["thisismydesign"]
+  spec.email         = ["git.thisismydesign@gmail.com"]
 
   spec.summary       = %q{TODO: Write a short summary, because RubyGems requires one.}
   spec.description   = %q{TODO: Write a longer description or delete this line.}
