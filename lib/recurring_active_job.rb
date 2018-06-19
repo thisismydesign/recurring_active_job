@@ -1,4 +1,4 @@
-require "recurring_active_job/version"
+require_relative "recurring_active_job/version"
 
 module RecurringActiveJob
   # Your code goes here...
