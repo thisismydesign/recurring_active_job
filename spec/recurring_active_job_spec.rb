@@ -1,9 +1,5 @@
-RSpec.describe RecurringActiveJob do
-  it "has a version number" do
-    expect(RecurringActiveJob::VERSION).not_to be nil
-  end
+require_relative 'spec_helper'
 
-  it "does something useful" do
-    expect(false).to eq(true)
-  end
+RSpec.describe RecurringActiveJob::Base do
+  it_behaves_like "RecurringActiveJob"
 end

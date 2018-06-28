@@ -20,6 +20,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activejob"
+  spec.add_dependency "activerecord"
+
+  spec.add_development_dependency "sqlite3"
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
@@ -32,4 +35,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "autowow"
   spec.add_development_dependency "rubocop"
   spec.add_development_dependency "rubocop-rspec"
+  spec.add_development_dependency 'factory_bot_rails', ">= 4.8.1" # https://github.com/thoughtbot/factory_bot/pull/982
 end

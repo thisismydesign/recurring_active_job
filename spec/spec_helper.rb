@@ -1,4 +1,5 @@
 require "bundler/setup"
+require 'rake'
 
 def ran_by_guard
   ARGV.any? {|e| e =~ /guard-rspec/ }
@@ -13,6 +14,24 @@ end
 
 require "recurring_active_job"
 
+ActiveJob::Base.queue_adapter = :test
+
+RSPEC_ROOT = File.dirname __FILE__
+Dir[Pathname.new(RSPEC_ROOT).join("support", "**", "*.rb")].each { |f| require f }
+
+environment = "development"
+class Seeder; def load_seed; end; end
+# Root path has to be execution path, see: https://github.com/rails/rails/issues/32910
+# Config is expected at `#{root}/config/database.yml`
+# If the issue above is fixed it can be moved to `#{root}/spec/example_project/config/database.yml`
+root = Pathname.new(".")
+db_config = root.join("config", "database.yml")
+db_dir = root.join("config")
+config = YAML::load(ERB.new(File.read(db_config)).result)
+load_active_record_tasks(database_configuration: config, root: root, db_dir: db_dir, seed_loader: Seeder.new)
+ENV["DISABLE_DATABASE_ENVIRONMENT_CHECK"] = "1"
+Rake::Task["db:migrate:reset"].invoke
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -25,4 +44,4 @@ RSpec.configure do |config|
   end
 end
 
-RSPEC_ROOT = File.dirname __FILE__
+Dir["./spec/support/**/*.rb"].sort.each { |f| require f }

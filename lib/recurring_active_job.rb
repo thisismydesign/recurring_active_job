@@ -1,5 +1,5 @@
 require_relative "recurring_active_job/version"
+require_relative "recurring_active_job/base"
+require_relative "recurring_active_job/model"
 
-module RecurringActiveJob
-  # Your code goes here...
-end
+module RecurringActiveJob; end
