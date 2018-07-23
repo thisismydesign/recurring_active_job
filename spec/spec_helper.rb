@@ -23,6 +23,7 @@ require "timecop"
 
 ActiveJob::Base.queue_adapter = :test
 ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
+ActiveJob::Base.logger = nil
 
 RSPEC_ROOT = File.dirname __FILE__
 Dir[Pathname.new(RSPEC_ROOT).join("support", "**", "*.rb")].each { |f| require f }
