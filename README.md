@@ -12,15 +12,15 @@
 | Development | [![Build Status](https://travis-ci.org/thisismydesign/recurring_active_job.svg?branch=master)](https://travis-ci.org/thisismydesign/recurring_active_job)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/recurring_active_job/badge.svg?branch=master)](https://coveralls.io/github/thisismydesign/recurring_active_job?branch=master) |
 
 Regular scheduler 10 minute setting:
-- run every 10 minutes
-  - 00:10-00:11
-  - 00:20-00:21
+- Runs every 10 minutes
+  - Run#1 00:10-00:11
+  - Run#2 00:20-00:21
   - etc
 
 `RecurringActiveJob` 10 minute setting:
-- run 10 minutes after the previous run finished
-  - 00:10-00:11
-  - 00:21-00:22
+- Runs 10 minutes after the previous run finished
+  - Run#1 00:10-00:11
+  - Run#2 00:21-00:22
   - etc
 
 Use cases:
