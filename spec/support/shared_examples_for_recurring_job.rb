@@ -18,7 +18,7 @@ RSpec.shared_examples "RecurringActiveJob" do
           described_class.perform_later
         }.to raise_error(/Missing `recurring_active_job_id` argument/)
       end
-  end
+    end
   end
 
   describe '#after_enqueue' do
@@ -87,6 +87,28 @@ RSpec.shared_examples "RecurringActiveJob" do
             described_class.set(wait: 10.minutes).perform_later(recurring_job_params)
           end.to have_enqueued_job(described_class).at(10.minutes.from_now)
         end
+      end
+    end
+  end
+
+  describe "logging" do
+    it "doesn't log by default" do
+      expect { described_class.perform_later(recurring_job_params) }.not_to output.to_stdout
+    end
+
+    context "when logger is set on class" do
+      let (:temp_file) { Tempfile.new }
+
+      before do
+        logger = Logger.new(temp_file)
+        logger.level = Logger::DEBUG
+        RecurringActiveJob::Base.logger = logger
+      end
+
+      it "logs to provided logger" do
+        expect {
+          described_class.perform_later(recurring_job_params)
+        }.to change { temp_file.rewind; temp_file.read }.from("")
       end
     end
   end

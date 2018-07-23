@@ -2,6 +2,10 @@ require "active_job"
 
 module RecurringActiveJob
   class Base < ActiveJob::Base
+    class << self
+      attr_accessor :logger
+    end
+
     before_enqueue do |job|
       raise "Missing `recurring_active_job_id` argument" unless job.arguments.first&.dig(:recurring_active_job_id)
       load_recurring_active_job(job.arguments.first&.dig(:recurring_active_job_id))
@@ -17,7 +21,7 @@ module RecurringActiveJob
 
     before_perform do |job|
       load_recurring_active_job(job.arguments.first[:recurring_active_job_id])
-      logger.debug("Performing #{job_info(job)}") if logger
+      logger&.debug("Performing #{job_info(job)}")
     end
       
     after_perform do |job|
@@ -35,18 +39,18 @@ module RecurringActiveJob
 
     def requeue(job)
       unless @recurring_active_job.active
-        logger.info("#{recurring_active_job_info} was deactivated and is not requeued") if logger
+        logger&.info("#{recurring_active_job_info} was deactivated and is not requeued")
         return
       end
 
       requeued_job = self.class.set(queue: job.queue_name, wait: @recurring_active_job.frequency_seconds.seconds).perform_later(job.arguments.first)
-      logger.debug("Requeued #{job_info(requeued_job)}") if logger
+      logger&.debug("Requeued #{job_info(requeued_job)}")
     end
 
     def clean
       return if @recurring_active_job.active
       return unless @recurring_active_job.auto_delete
-      logger.debug("Destroying #{recurring_active_job_info}") if logger
+      logger&.debug("Destroying #{recurring_active_job_info}")
       @recurring_active_job.destroy!
     end
 
@@ -59,8 +63,7 @@ module RecurringActiveJob
     end
 
     def logger
-      # TODO: make logger configurable
-      Logger.new(STDOUT)
+      self.class.logger
     end
   end
 end
