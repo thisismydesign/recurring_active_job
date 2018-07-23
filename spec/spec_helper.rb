@@ -14,6 +14,13 @@ end
 
 require "recurring_active_job"
 
+# Use rspec-rails for testing ActiveJob
+# Requiring `active_record/railtie` is necessary, see: https://github.com/rspec/rspec-rails/issues/1690
+require "active_record/railtie"
+require "rspec/rails"
+
+require "timecop"
+
 ActiveJob::Base.queue_adapter = :test
 ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
 

@@ -1,9 +1,10 @@
 require 'spec_helper'
 
+# NOTE: `have_enqueued_job` matchers does not count the given block
+# E.g. expect { described_class.perform_later }.not_to have_enqueued_job(described_class) => pass
 RSpec.shared_examples "RecurringActiveJob" do
   let!(:recurring_active_job) { RecurringActiveJob::Model.create! }
   let(:recurring_job_params) { { recurring_active_job_id: recurring_active_job.id } }
-  let(:conigured_job_mock) { double("ActiveJob::ConfiguredJob") }
 
   describe '#before_enqueue' do
     it 'sets `job_id` on recurring_active_job' do
@@ -20,16 +21,14 @@ RSpec.shared_examples "RecurringActiveJob" do
     end
   end
 
-  # TODO: Use rspec-rails matchers (e.g. `have_enqueued_job`) instead of mocks
   describe '#after_perform' do
     context 'deactivated recurring_active_job' do
       let(:recurring_active_job) { RecurringActiveJob::Model.create!(active: false) }
 
       it 'does not requeue or change recurring_active_job' do
-        allow(described_class).to receive_message_chain(:set).and_return(conigured_job_mock)
-        expect(conigured_job_mock).not_to receive(:perform_later)
-
-        described_class.perform_later(recurring_job_params)
+        expect {
+          described_class.perform_later(recurring_job_params)
+        }.not_to have_enqueued_job(described_class)
       end
 
       context "auto delete enabled" do
@@ -61,30 +60,25 @@ RSpec.shared_examples "RecurringActiveJob" do
       it 'requeues job with same arguments' do
         params = { recurring_active_job_id: recurring_active_job.id, abc: 123 }
 
-        # Allow calling the actual logic tested later
-        expect(described_class).to receive(:set).and_call_original
-
-        expect(described_class).to receive(:set).and_return(conigured_job_mock)
-        expect(conigured_job_mock).to receive(:perform_later).with(hash_including(params)).and_return(double("ActiveJob::ConfiguredJob", job_id: "", queue_name: ""))
-
-        described_class.set.perform_later(params)
+        expect {
+          described_class.perform_later(params)
+        }.to have_enqueued_job(described_class).with(params)
       end
 
       it 'requeues job on same queue' do
         queue_name = "priority"
 
-        # Allow calling the actual logic tested later
-        expect(described_class).to receive(:set).with(queue: queue_name).and_call_original
-
-        expect(described_class).to receive(:set).with(hash_including(queue: queue_name)).and_call_original
-
-        described_class.set(queue: queue_name).perform_later(recurring_job_params)
+        expect {
+          described_class.set(queue: queue_name).perform_later(recurring_job_params)
+        }.to have_enqueued_job(described_class).on_queue(queue_name)
       end
 
-      it 'requeues job with given frequency' do
-        expect(described_class).to receive(:set).with(hash_including(wait: recurring_active_job.frequency_seconds.seconds)).and_call_original
-
-        described_class.perform_later(recurring_job_params)
+      it "requeues job with given frequency" do
+        Timecop.freeze(Time.current) do
+          expect do
+            described_class.set(wait: 10.minutes).perform_later(recurring_job_params)
+          end.to have_enqueued_job(described_class).at(10.minutes.from_now)
+        end
       end
     end
   end
