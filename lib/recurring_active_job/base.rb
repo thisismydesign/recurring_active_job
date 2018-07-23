@@ -3,7 +3,8 @@ require "active_job"
 module RecurringActiveJob
   class Base < ActiveJob::Base
     before_enqueue do |job|
-      load_recurring_active_job(job.arguments.first[:recurring_active_job_id])
+      raise "Missing `recurring_active_job_id` argument" unless job.arguments.first&.dig(:recurring_active_job_id)
+      load_recurring_active_job(job.arguments.first&.dig(:recurring_active_job_id))
       @recurring_active_job.job_id = job.job_id
       @recurring_active_job.save!
     end

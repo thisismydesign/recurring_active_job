@@ -11,6 +11,14 @@ RSpec.shared_examples "RecurringActiveJob" do
       job = described_class.set(wait: 10.seconds).perform_later(recurring_job_params)
       expect(recurring_active_job.reload.job_id).to eq(job.job_id)
     end
+
+    context "when missing recurring_active_job_id argument" do
+      it "raises error" do
+        expect {
+          described_class.perform_later
+        }.to raise_error(/Missing `recurring_active_job_id` argument/)
+      end
+  end
   end
 
   describe '#after_enqueue' do
