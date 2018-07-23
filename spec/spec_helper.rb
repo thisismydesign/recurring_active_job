@@ -15,6 +15,7 @@ end
 require "recurring_active_job"
 
 ActiveJob::Base.queue_adapter = :test
+ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
 
 RSPEC_ROOT = File.dirname __FILE__
 Dir[Pathname.new(RSPEC_ROOT).join("support", "**", "*.rb")].each { |f| require f }

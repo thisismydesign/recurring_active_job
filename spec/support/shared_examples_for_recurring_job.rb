@@ -15,7 +15,7 @@ RSpec.shared_examples "RecurringActiveJob" do
   describe '#after_enqueue' do
     it 'sets `provider_job_id` on recurring_active_job' do
       allow_any_instance_of(described_class).to receive(:provider_job_id).and_return("provider_job_id")
-      described_class.set(wait: 10.seconds).perform_now(recurring_job_params)
+      described_class.set(wait: 10.seconds).perform_later(recurring_job_params)
       expect(recurring_active_job.reload.provider_job_id).to eq("provider_job_id")
     end
   end
@@ -29,7 +29,7 @@ RSpec.shared_examples "RecurringActiveJob" do
         allow(described_class).to receive_message_chain(:set).and_return(conigured_job_mock)
         expect(conigured_job_mock).not_to receive(:perform_later)
 
-        described_class.perform_now(recurring_job_params)
+        described_class.perform_later(recurring_job_params)
       end
 
       context "auto delete enabled" do
@@ -37,7 +37,7 @@ RSpec.shared_examples "RecurringActiveJob" do
 
         it "destroys entity" do
           expect do
-            described_class.perform_now(recurring_job_params)
+            described_class.perform_later(recurring_job_params)
           end.to change { RecurringActiveJob::Model.all.count }.by(-1)
         end
       end
@@ -49,7 +49,7 @@ RSpec.shared_examples "RecurringActiveJob" do
           expect(recurring_active_job).not_to receive(:destroy!)
           
           expect do
-            described_class.perform_now(recurring_job_params)
+            described_class.perform_later(recurring_job_params)
           end.not_to change { RecurringActiveJob::Model.all.count }
         end
       end
@@ -67,26 +67,24 @@ RSpec.shared_examples "RecurringActiveJob" do
         expect(described_class).to receive(:set).and_return(conigured_job_mock)
         expect(conigured_job_mock).to receive(:perform_later).with(hash_including(params)).and_return(double("ActiveJob::ConfiguredJob", job_id: "", queue_name: ""))
 
-        described_class.set.perform_now(params)
+        described_class.set.perform_later(params)
       end
 
       it 'requeues job on same queue' do
-        skip "Something's off here, it always gets called with default queue"
-
-        queue_name = :priority
+        queue_name = "priority"
 
         # Allow calling the actual logic tested later
         expect(described_class).to receive(:set).with(queue: queue_name).and_call_original
 
         expect(described_class).to receive(:set).with(hash_including(queue: queue_name)).and_call_original
 
-        described_class.set(queue: queue_name).perform_now(recurring_job_params)
+        described_class.set(queue: queue_name).perform_later(recurring_job_params)
       end
 
       it 'requeues job with given frequency' do
         expect(described_class).to receive(:set).with(hash_including(wait: recurring_active_job.frequency_seconds.seconds)).and_call_original
 
-        described_class.perform_now(recurring_job_params)
+        described_class.perform_later(recurring_job_params)
       end
     end
   end
