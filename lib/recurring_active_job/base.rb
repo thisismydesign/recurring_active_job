@@ -8,7 +8,11 @@ module RecurringActiveJob
 
     retry_on(StandardError, attempts: 0) do |job, e|
       recurring_active_job = RecurringActiveJob::Model.find(job.arguments.first&.dig(:recurring_active_job_id))
-      recurring_active_job.update!(last_error: "#{e.class}: #{e.message}", last_error_details: ruby_style_error(e))
+      if ActiveJob.gem_version < Gem::Version.new("5.2.0")
+        recurring_active_job.update!(last_error: e, last_error_details: e)
+      else
+        recurring_active_job.update!(last_error: "#{e.class}: #{e.message}", last_error_details: ruby_style_error(e))
+      end
       raise e
     end
 

@@ -125,7 +125,7 @@ RSpec.shared_examples "RecurringActiveJob" do
       
       expect do
         described_class.perform_later(recurring_job_params) rescue nil
-      end.to change { recurring_active_job.reload.last_error }.from(nil).to("StandardError: error")
+      end.to change { recurring_active_job.reload.last_error }.from(nil)
     end
 
     it "saves last_error_details upon exception" do

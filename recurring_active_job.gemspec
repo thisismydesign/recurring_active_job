@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activejob"
+  spec.add_dependency "activejob", ">= 5.0.0" # Usage of `retry_on`
   spec.add_dependency "activerecord"
 
   spec.add_development_dependency "sqlite3"
