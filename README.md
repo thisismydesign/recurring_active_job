@@ -90,7 +90,7 @@ MyJob.perform_later(recurring_active_job_id: recurring_active_job.id)
 
 ### Testing
 
-Make sure that the class porperly inherits:
+Make sure that the class properly inherits:
 
 ```ruby
 describe MyJob
@@ -112,6 +112,15 @@ RSpec.shared_context "recurring active job" do
     allow(RecurringActiveJob::Model).to receive(:find).and_return(recurring_active_job)
     allow(recurring_active_job).to receive(:save!)
     allow(recurring_active_job).to receive(:destroy!)
+  end
+end
+```
+
+```ruby
+RSpec.describe MyJob do
+  describe "#perform" do
+    include_context "recurring active job"
+    # ...
   end
 end
 ```
