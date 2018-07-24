@@ -88,6 +88,34 @@ recurring_active_job = RecurringActiveJob::Model.create!(frequency_seconds: 10)
 MyJob.perform_later(recurring_active_job_id: recurring_active_job.id)
 ```
 
+### Testing
+
+Make sure that the class porperly inherits:
+
+```ruby
+describe MyJob
+  it "is a RecurringActiveJob" do
+    expect(described_class).to be < RecurringActiveJob::Base
+  end
+end
+```
+
+Add a shared context to be included when testing Recurring jobs:
+
+`spec/support/shared_context_for_recurring_active_job.rb`
+```ruby
+RSpec.shared_context "recurring active job" do
+  let(:recurring_active_job) { build_stubbed(:recurring_active_job) }
+  let(:recurring_active_job_params) { { recurring_active_job_id: recurring_active_job.id } }
+
+  before do
+    allow(RecurringActiveJob::Model).to receive(:find).and_return(recurring_active_job)
+    allow(recurring_active_job).to receive(:save!)
+    allow(recurring_active_job).to receive(:destroy!)
+  end
+end
+```
+
 ## Feedback
 
 Feedback is appreciated.
