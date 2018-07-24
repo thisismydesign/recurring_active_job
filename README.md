@@ -61,6 +61,8 @@ def change
     t.boolean :active, default: true, null: false
     t.integer :frequency_seconds, default: 600, null: false
     t.boolean :auto_delete, default: true, null: false
+    t.string :last_error
+    t.text :last_error_details
 
     t.timestamps
   end

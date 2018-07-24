@@ -18,6 +18,8 @@ ActiveRecord::Schema.define(version: 2018_06_27_123939) do
     t.boolean "active", default: true, null: false
     t.integer "frequency_seconds", default: 600, null: false
     t.boolean "auto_delete", default: true, null: false
+    t.string "last_error"
+    t.text "last_error_details"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_recurring_active_jobs_on_job_id", unique: true

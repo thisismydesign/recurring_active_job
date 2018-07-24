@@ -112,4 +112,28 @@ RSpec.shared_examples "RecurringActiveJob" do
       end
     end
   end
+
+  describe "error handling" do
+    it "bubbles up error" do
+      allow_any_instance_of(described_class).to receive(:perform).and_raise(StandardError, "error")
+      
+      expect { described_class.perform_later(recurring_job_params) }.to raise_error(StandardError, "error")
+    end
+
+    it "saves last_error upon exception" do
+      allow_any_instance_of(described_class).to receive(:perform).and_raise(StandardError, "error")
+      
+      expect do
+        described_class.perform_later(recurring_job_params) rescue nil
+      end.to change { recurring_active_job.reload.last_error }.from(nil).to("StandardError: error")
+    end
+
+    it "saves last_error_details upon exception" do
+      allow_any_instance_of(described_class).to receive(:perform).and_raise(StandardError, "error")
+      
+      expect do
+        described_class.perform_later(recurring_job_params) rescue nil
+      end.to change { recurring_active_job.reload.last_error_details }.from(nil)
+    end
+  end
 end

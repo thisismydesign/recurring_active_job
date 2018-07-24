@@ -6,6 +6,12 @@ module RecurringActiveJob
       attr_accessor :logger
     end
 
+    retry_on(StandardError, attempts: 0) do |job, e|
+      recurring_active_job = RecurringActiveJob::Model.find(job.arguments.first&.dig(:recurring_active_job_id))
+      recurring_active_job.update!(last_error: "#{e.class}: #{e.message}", last_error_details: ruby_style_error(e))
+      raise e
+    end
+
     before_enqueue do |job|
       raise "Missing `recurring_active_job_id` argument" unless job.arguments.first&.dig(:recurring_active_job_id)
       load_recurring_active_job(job.arguments.first&.dig(:recurring_active_job_id))
@@ -64,6 +70,11 @@ module RecurringActiveJob
 
     def logger
       self.class.logger
+    end
+
+    def self.ruby_style_error(e)
+      e.backtrace.join("\n\t")
+      .sub("\n\t", ": #{e}#{e.class ? " (#{e.class})" : ''}\n\t")
     end
   end
 end
