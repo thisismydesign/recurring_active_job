@@ -3,7 +3,7 @@
 #### Adapter agnostic ActiveJob scheduler based on time spent between executions.
 
 <!--- Version informartion -->
-*You are viewing the README of the development version. You can find the README of the latest release (v0.1.0) [here](https://github.com/thisismydesign/recurring_active_job/releases/tag/v0.1.0).*
+*You are viewing the README of version [v0.2.0](https://github.com/thisismydesign/recurring_active_job/releases/tag/v0.2.0). You can find other releases [here](https://github.com/thisismydesign/recurring_active_job/releases).*
 <!--- Version informartion end -->
 
 | Branch | Status |
