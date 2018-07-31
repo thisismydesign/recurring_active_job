@@ -125,6 +125,32 @@ RSpec.describe MyJob do
 end
 ```
 
+### Custom error handling
+
+`RecurringActiveJob` defines the following generic error handling which is required for some features (but raises the original error at the end):
+
+```ruby
+rescue_from(StandardError) do |e|
+  handle_exception(e)
+end
+```
+
+To define your own error handling but keep those features working you can redefine `handle_exception` like this:
+
+```ruby
+rescue_from(StandardError) do |e|
+  handle_exception(e)
+end
+
+# ...
+
+def handle_exception(e)
+  super rescue StandardError
+
+  # ...
+end
+```
+
 ## Feedback
 
 Feedback is appreciated.
