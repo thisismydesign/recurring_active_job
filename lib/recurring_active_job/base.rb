@@ -6,14 +6,8 @@ module RecurringActiveJob
       attr_accessor :logger
     end
 
-    retry_on(StandardError, attempts: 0) do |job, e|
-      recurring_active_job = RecurringActiveJob::Model.find(job.arguments.first&.dig(:recurring_active_job_id))
-      if ActiveJob.gem_version < Gem::Version.new("5.2.0")
-        recurring_active_job.update!(last_error: e, last_error_details: e)
-      else
-        recurring_active_job.update!(last_error: "#{e.class}: #{e.message}", last_error_details: ruby_style_error(e))
-      end
-      raise e
+    rescue_from(StandardError) do |e|
+      handle_exception(e)
     end
 
     before_enqueue do |job|
@@ -76,7 +70,17 @@ module RecurringActiveJob
       self.class.logger
     end
 
-    def self.ruby_style_error(e)
+    def handle_exception(e)
+      recurring_active_job = RecurringActiveJob::Model.find(arguments.first&.dig(:recurring_active_job_id))
+      if ActiveJob.gem_version < Gem::Version.new("5.2.0")
+        recurring_active_job.update!(last_error: e, last_error_details: e)
+      else
+        recurring_active_job.update!(last_error: "#{e.class}: #{e.message}", last_error_details: ruby_style_error(e))
+      end
+      raise e
+    end
+
+    def ruby_style_error(e)
       e.backtrace.join("\n\t")
       .sub("\n\t", ": #{e}#{e.class ? " (#{e.class})" : ''}\n\t")
     end
