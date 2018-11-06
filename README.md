@@ -1,6 +1,6 @@
 # RecurringActiveJob
 
-#### Dynamic recurring ActiveJob scheduler
+#### Dynamic recurring ActiveJob scheduler based on time spent between executions
 
 <!--- Version informartion -->
 *You are viewing the README of the development version. You can find the README of the latest release (v0.4.0) [here](https://github.com/thisismydesign/recurring_active_job/releases/tag/v0.4.0).*
@@ -13,9 +13,24 @@
 
 ## Features
 
-- Adapter agnostic
-- Dynamic (used in code and not via predefined configuration)
+- Adapter agnostic scheduling via ActiveJob
+- Dynamic management (rather than via predefined configuration)
 - Doesn't require its own worker or service
+
+Scheduling is based on time spent between extecutions. This is useful for
+  - Running jobs constantly without delay in between
+  - Running jobs again some time after their execution
+  - Jobs where the execution time might be longer than the recurring timeframe but you *don't* want to trigger multiple jobs at once
+  
+Regular scheduling of a 5 minute job for every 10 minutes:
+- Runs every 10 minutes
+  - Run#1 00:10-00:15
+  - Run#2 00:20-00:25
+
+`RecurringActiveJob` 10 minute recurrence:
+- Runs 10 minutes after the previous run finished
+  - Run#1 00:10-00:15
+  - Run#2 00:25-00:30
 
 ## Alternatives
 
@@ -70,7 +85,7 @@ end
 Jobs need to subclass `RecurringActiveJob::Base` instead of `ActiveJob::Base`:
 
 ```ruby
-class MyJob < RecurringActiveJob::Base
+class MyRecurringJob < RecurringActiveJob::Base
   def perform(*args)
     puts "hi"
   end
@@ -82,7 +97,7 @@ Create a `RecurringActiveJob::Model` record and pass its ID when performing the 
 ```ruby
 recurring_active_job = RecurringActiveJob::Model.create!(frequency_seconds: 10)
 
-MyJob.perform_later(recurring_active_job_id: recurring_active_job.id)
+MyRecurringJob.perform_later(recurring_active_job_id: recurring_active_job.id)
 ```
 
 ### Testing
