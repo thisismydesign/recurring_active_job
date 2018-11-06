@@ -19,7 +19,7 @@
 
 ## Alternatives
 
-[resque-scheduler](https://github.com/resque/resque-scheduler#dynamic-schedules) has the same functionality (and more) and [it can also support ActiveJob](https://stackoverflow.com/a/48551550/2771889). The drawback being the mandatory dependency on Resque and therefore Redis.
+[resque-scheduler](https://github.com/resque/resque-scheduler#dynamic-schedules) has the same functionality (and more) and [it can also support ActiveJob](https://stackoverflow.com/a/48551550/2771889). The drawback being the mandatory dependency on Resque (and therefore Redis) and having to run it as a separate service.
 
 ## Installation
 
