@@ -1,6 +1,6 @@
 # RecurringActiveJob
 
-#### Adapter agnostic ActiveJob scheduler based on time spent between executions.
+#### Dynamic recurring ActiveJob scheduler
 
 <!--- Version informartion -->
 *You are viewing the README of the development version. You can find the README of the latest release (v0.4.0) [here](https://github.com/thisismydesign/recurring_active_job/releases/tag/v0.4.0).*
@@ -11,22 +11,15 @@
 | Release | [![Build Status](https://travis-ci.org/thisismydesign/recurring_active_job.svg?branch=release)](https://travis-ci.org/thisismydesign/recurring_active_job)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/recurring_active_job/badge.svg?branch=release)](https://coveralls.io/github/thisismydesign/recurring_active_job?branch=release)   [![Gem Version](https://badge.fury.io/rb/recurring_active_job.svg)](https://badge.fury.io/rb/recurring_active_job)   [![Total Downloads](http://ruby-gem-downloads-badge.herokuapp.com/recurring_active_job?type=total)](https://rubygems.org/gems/recurring_active_job) |
 | Development | [![Build Status](https://travis-ci.org/thisismydesign/recurring_active_job.svg?branch=master)](https://travis-ci.org/thisismydesign/recurring_active_job)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/recurring_active_job/badge.svg?branch=master)](https://coveralls.io/github/thisismydesign/recurring_active_job?branch=master) |
 
-Regular scheduler 10 minute setting:
-- Runs every 10 minutes
-  - Run#1 00:10-00:11
-  - Run#2 00:20-00:21
-  - etc
+## Features
 
-`RecurringActiveJob` 10 minute setting:
-- Runs 10 minutes after the previous run finished
-  - Run#1 00:10-00:11
-  - Run#2 00:21-00:22
-  - etc
+- Adapter agnostic
+- Dynamic (used in code and not via predefined configuration)
+- Doesn't require its own worker or service
 
-Use cases:
-- Running jobs constantly without any delay in between
-- Running jobs again some time after their execution
-- Jobs where the execution time might be longer than the recurring timeframe
+## Alternatives
+
+[resque-scheduler](https://github.com/resque/resque-scheduler#dynamic-schedules) has the same functionality (and more) and [it can also support ActiveJob](https://stackoverflow.com/a/48551550/2771889). The drawback being the mandatory dependency on Resque and therefore Redis.
 
 ## Installation
 
@@ -44,7 +37,7 @@ Or install it yourself as:
 
     $ gem install recurring_active_job
 
-## Usage
+## Setup
 
 Recurring jobs are stored in the DB therefore we need the following migration:
 
@@ -71,6 +64,8 @@ def change
   add_index :recurring_active_jobs, :provider_job_id, unique: true
 end
 ```
+
+## Usage
 
 Jobs need to subclass `RecurringActiveJob::Base` instead of `ActiveJob::Base`:
 
