@@ -21,20 +21,20 @@ Scheduling is based on time spent between extecutions. This is useful for
   - Running jobs constantly without delay in between
   - Running jobs again some time after their execution
   - Jobs where the execution time might be longer than the recurring timeframe but you *don't* want to trigger multiple jobs at once
-  
-Regular scheduling of a 5 minute job for every 10 minutes:
-- Runs every 10 minutes
-  - Run#1 00:10-00:15
-  - Run#2 00:20-00:25
 
-`RecurringActiveJob` 10 minute recurrence:
-- Runs 10 minutes after the previous run finished
-  - Run#1 00:10-00:15
-  - Run#2 00:25-00:30
+#### Example use case
+
+10 minute `RecurringActiveJob` recurrence schedule for a 5 minute job means it runs 10 minutes after the previous run finished:
+  - Run#1 00:00 - 00:05
+  - Run#2 00:15 - 00:20
+
+*As opposed to* regular scheduling:
+  - Run#1 00:00 - 00:05
+  - Run#2 00:10 - 00:15
 
 ## Alternatives
 
-[resque-scheduler](https://github.com/resque/resque-scheduler#dynamic-schedules) has the same functionality (and more) and [it can also support ActiveJob](https://stackoverflow.com/a/48551550/2771889). The drawback being the mandatory dependency on Resque (and therefore Redis) and having to run it as a separate service.
+[resque-scheduler](https://github.com/resque/resque-scheduler#dynamic-schedules) provides regular dynamic scheduling (and more) and with a bit of tweaking [it can also support ActiveJob](https://stackoverflow.com/a/48551550/2771889). The drawback being the mandatory dependency on Resque (and therefore Redis) and having to run it as a separate service.
 
 ## Installation
 
